@@ -11,7 +11,8 @@
   "author": "BayuDC <dev.bayudc@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "micro": "^9.3.4"
+    "micro": "^9.3.4",
+    "mongodb": "^4.7.0"
   },
   "devDependencies": {
     "micro-dev": "^3.0.0"
