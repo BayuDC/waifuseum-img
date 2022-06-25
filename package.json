@@ -1,0 +1,19 @@
+{
+  "name": "waifuseum-media",
+  "version": "0.0.0",
+  "description": "Waifuseum's media provider and image processing service",
+  "main": "app.js",
+  "scripts": {
+    "start": "micro",
+    "dev": "micro-dev"
+  },
+  "repository": "https://github.com/BayuDC/waifuseum-media.git",
+  "author": "BayuDC <dev.bayudc@gmail.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "micro": "^9.3.4"
+  },
+  "devDependencies": {
+    "micro-dev": "^3.0.0"
+  }
+}
