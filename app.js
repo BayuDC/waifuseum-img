@@ -24,10 +24,9 @@ module.exports = async (req, res) => {
             collection.set(id, file.name);
 
             serveFile(res, file.name);
-            return;
+        } else {
+            serveFile(res, cache);
         }
-
-        serveFile(res, cache);
     } catch (err) {
         serveError(res, err);
     }
