@@ -13,7 +13,8 @@
   "dependencies": {
     "micro": "^9.3.4",
     "micro-query": "^0.3.0",
-    "mongodb": "^4.7.0"
+    "mongodb": "^4.7.0",
+    "sharp": "^0.30.7"
   },
   "devDependencies": {
     "micro-dev": "^3.0.0"

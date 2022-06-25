@@ -1,34 +1,24 @@
-const { get } = require('https');
 const { send } = require('micro');
-const query = require('micro-query');
-const { ObjectId } = require('mongodb');
-const db = require('./db');
+
+const getQuery = require('./core/get-query');
+const getPicture = require('./core/get-picture');
+const getFile = require('./core/get-file');
 
 /**
  * @param {import('http').IncomingMessage} req
  * @param {import('http').ServerResponse} res
  */
 module.exports = async (req, res) => {
-    // get query
-    const { id } = query(req);
-    if (!id || !ObjectId.isValid(id)) return send(res, 400);
+    try {
+        const { id } = getQuery(req);
+        const picture = await getPicture(id);
+        const stream = await getFile(picture);
 
-    // fetch data
-    const picture = await db.collection('pictures').findOne({ _id: new ObjectId(id) }, { projection: { url: 1 } });
-    if (!picture) return send(res, 404);
-
-    // download file
-    const stream = await new Promise(resolve => {
-        get('https://cdn.discordapp.com/attachments' + picture.url, res => {
-            resolve(res.statusCode == 200 ? res : undefined);
-        });
-    });
-
-    // TODO process file
-
-    // send file
-    res.setHeader('Content-Type', 'image/jpg');
-    res.setHeader('Content-Disposition', `filename="${id}.jpg"`);
-
-    return stream;
+        res.setHeader('Content-Type', 'image/jpg');
+        res.setHeader('Content-Disposition', `filename="${id}.jpg"`);
+        send(res, 200, stream);
+    } catch (err) {
+        console.log(err);
+        send(res, 400);
+    }
 };
