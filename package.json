@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "micro",
-    "dev": "micro-dev"
+    "dev": "micro-dev -w false"
   },
   "repository": "https://github.com/BayuDC/waifuseum-media.git",
   "author": "BayuDC <dev.bayudc@gmail.com>",
