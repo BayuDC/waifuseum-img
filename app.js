@@ -4,6 +4,8 @@ const getQuery = require('./core/get-query');
 const getPicture = require('./core/get-picture');
 const getStream = require('./core/get-stream');
 const processFile = require('./core/process-file');
+const serveFile = require('./core/serve-file');
+const serveError = require('./core/serve-error');
 
 /**
  * @param {import('http').IncomingMessage} req
@@ -16,11 +18,8 @@ module.exports = async (req, res) => {
         const stream = await getStream(picture);
         const file = await processFile(stream, id + '.jpg');
 
-        // res.setHeader('Content-Type', 'image/jpg');
-        // res.setHeader('Content-Disposition', `filename="${id}.jpg"`);
-        send(res, 200);
+        serveFile(res, file);
     } catch (err) {
-        console.log(err);
-        send(res, 400);
+        serveError(res, err);
     }
 };

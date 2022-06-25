@@ -9,6 +9,7 @@ module.exports = async (readStream, name) => {
         readStream.on('end', () => {
             resolve({
                 path: path,
+                name: name,
             });
         });
     });
