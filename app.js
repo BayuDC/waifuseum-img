@@ -10,7 +10,11 @@ const db = require('./db');
 module.exports = async (req, res) => {
     const { id } = query(req);
 
-    if (!id || !ObjectId.isValid(id)) return send(res, 404);
+    if (!id || !ObjectId.isValid(id)) return send(res, 400);
 
-    return 'Done';
+    const picture = await db.collection('pictures').findOne({ _id: new ObjectId(id) }, { projection: { url: 1 } });
+
+    if (!picture) return send(res, 404);
+
+    return { picture };
 };
