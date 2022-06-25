@@ -1,7 +1,7 @@
 const getQuery = require('./core/get-query');
 const getPicture = require('./core/get-picture');
-const getStream = require('./core/get-stream');
-const processFile = require('./core/process-file');
+const getFile = require('./core/get-file');
+const modFile = require('./core/mod-file');
 const serveFile = require('./core/serve-file');
 const serveError = require('./core/serve-error');
 
@@ -18,8 +18,8 @@ module.exports = async (req, res) => {
         const cache = collection.get(id);
         if (!cache) {
             const picture = await getPicture(id);
-            const stream = await getStream(picture);
-            const file = await processFile(stream, id + '.jpg');
+            const file = await getFile(picture);
+            await modFile(file);
 
             collection.set(id, file.name);
 
