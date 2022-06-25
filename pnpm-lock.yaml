@@ -3,10 +3,12 @@ lockfileVersion: 5.4
 specifiers:
   micro: ^9.3.4
   micro-dev: ^3.0.0
+  micro-query: ^0.3.0
   mongodb: ^4.7.0
 
 dependencies:
   micro: 9.3.4
+  micro-query: 0.3.0
   mongodb: 4.7.0
 
 devDependencies:
@@ -960,6 +962,12 @@ packages:
       - supports-color
     dev: true
 
+  /micro-query/0.3.0:
+    resolution: {integrity: sha512-fdx9ASalw86PQtTj1ua0wcTjVRHEwdl15reW60ryJ0X6RWi3Z4A7kstGtcjAGlwGr7JBzUJPq+WiCcwpuYfkiw==}
+    dependencies:
+      qs: 6.5.2
+    dev: false
+
   /micro/9.3.4:
     resolution: {integrity: sha512-smz9naZwTG7qaFnEZ2vn248YZq9XR+XoOH3auieZbkhDL4xLOxiE+KqG8qqnBeKfXA9c1uEFGCxPN1D+nT6N7w==}
     engines: {node: '>= 8.0.0'}
@@ -1219,6 +1227,11 @@ packages:
   /punycode/2.1.1:
     resolution: {integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==}
     engines: {node: '>=6'}
+    dev: false
+
+  /qs/6.5.2:
+    resolution: {integrity: sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==}
+    engines: {node: '>=0.6'}
     dev: false
 
   /raw-body/2.3.2:

@@ -1,3 +1,6 @@
+const { send } = require('micro');
+const query = require('micro-query');
+const { ObjectId } = require('mongodb');
 const db = require('./db');
 
 /**
@@ -5,5 +8,9 @@ const db = require('./db');
  * @param {import('http').ServerResponse} res
  */
 module.exports = async (req, res) => {
-    return 'Hello World';
+    const { id } = query(req);
+
+    if (!id || !ObjectId.isValid(id)) return send(res, 404);
+
+    return 'Done';
 };

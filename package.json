@@ -12,6 +12,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "micro": "^9.3.4",
+    "micro-query": "^0.3.0",
     "mongodb": "^4.7.0"
   },
   "devDependencies": {
