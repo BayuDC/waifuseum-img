@@ -4,7 +4,7 @@
   "description": "Waifuseum's media provider and image processing service",
   "main": "app.js",
   "scripts": {
-    "start": "micro",
+    "start": "micro -l tcp://0.0.0.0:$PORT",
     "dev": "micro-dev"
   },
   "repository": "https://github.com/BayuDC/waifuseum-media.git",
