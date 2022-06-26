@@ -74,7 +74,10 @@ app.use(async (ctx, next) => {
 });
 
 app.use(ctx => {
-    ctx.body = ctx.state.picture;
+    const { picture } = ctx.state;
+
+    ctx.body = fs.createReadStream(picture.path);
+    ctx.attachment(picture.path);
 });
 
 app.listen(port, () => {
