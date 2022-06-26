@@ -3,6 +3,7 @@ import { Db, ObjectId } from 'mongodb';
 declare module 'koa' {
     interface DefaultContext {
         db: Db;
+        caches: Map<string, string>;
     }
     interface DefaultState {
         picture: {

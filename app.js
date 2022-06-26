@@ -9,10 +9,22 @@ const app = new Koa();
 const port = process.env.PORT || 3000;
 
 app.context.db = db;
+app.context.caches = new Map();
 
 app.use(async (ctx, next) => {
     const { id } = ctx.query;
-    if (!id || !ObjectId.isValid(id)) ctx.throw(400);
+    if (!id) ctx.throw(418);
+
+    const cache = ctx.caches.get(id);
+    if (!cache) return await next();
+
+    ctx.body = fs.createReadStream(cache);
+    ctx.attachment(cache);
+});
+
+app.use(async (ctx, next) => {
+    const { id } = ctx.query;
+    if (!ObjectId.isValid(id)) ctx.throw(400);
 
     const picture = await ctx.db.collection('pictures').findOne(
         { _id: new ObjectId(id) },
@@ -76,6 +88,7 @@ app.use(async (ctx, next) => {
 app.use(ctx => {
     const { picture } = ctx.state;
 
+    ctx.caches.set(picture._id.toString(), picture.path);
     ctx.body = fs.createReadStream(picture.path);
     ctx.attachment(picture.path);
 });
