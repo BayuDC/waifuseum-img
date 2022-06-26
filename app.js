@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Koa = require('koa');
+const sharp = require('sharp');
 const { get } = require('https');
 const { ObjectId } = require('mongodb');
 const db = require('./db');
@@ -48,6 +49,25 @@ app.use(async (ctx, next) => {
         await next();
     } catch {
         ctx.throw(410);
+    }
+});
+
+app.use(async (ctx, next) => {
+    const { picture } = ctx.state;
+
+    try {
+        const path = './data/' + picture.name;
+        await sharp(picture.path)
+            .resize(256, 256, {
+                position: 'top',
+            })
+            .toFile(path);
+
+        fs.unlink(picture.path);
+        picture.path = path;
+        await next();
+    } catch {
+        ctx.throw(409);
     }
 });
 
