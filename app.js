@@ -1,4 +1,6 @@
+const fs = require('fs');
 const Koa = require('koa');
+const { get } = require('https');
 const { ObjectId } = require('mongodb');
 const db = require('./db');
 
@@ -19,8 +21,36 @@ app.use(async (ctx, next) => {
     if (!picture) ctx.throw(404);
 
     ctx.state.picture = picture;
-    next();
+    await next();
 });
+app.use(async (ctx, next) => {
+    const { picture } = ctx.state;
+
+    try {
+        await new Promise((resolve, reject) => {
+            get('https://cdn.discordapp.com/attachments' + picture.url, res => {
+                if (res.statusCode != 200) return reject();
+
+                const path = './temp/' + picture._id;
+                const stream = fs.createWriteStream(path);
+
+                res.pipe(stream);
+                res.on('end', () => {
+                    picture.path = path;
+                    picture.name = picture._id + '.jpg';
+                    resolve();
+                });
+                res.on('error', () => {
+                    reject();
+                });
+            });
+        });
+        await next();
+    } catch {
+        ctx.throw(410);
+    }
+});
+
 app.use(ctx => {
     ctx.body = ctx.state.picture;
 });

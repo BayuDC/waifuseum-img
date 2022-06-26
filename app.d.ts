@@ -8,6 +8,8 @@ declare module 'koa' {
         picture: {
             _id: ObjectId;
             url: string;
+            path: string;
+            name: string;
         };
     }
 }
