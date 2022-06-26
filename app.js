@@ -46,10 +46,11 @@ app.use(async (ctx, next) => {
                 });
             });
         });
-        await next();
     } catch {
         ctx.throw(410);
     }
+
+    await next();
 });
 
 app.use(async (ctx, next) => {
@@ -63,12 +64,13 @@ app.use(async (ctx, next) => {
             })
             .toFile(path);
 
-        fs.unlink(picture.path);
+        fs.unlink(picture.path, () => {});
         picture.path = path;
-        await next();
     } catch {
         ctx.throw(409);
     }
+
+    await next();
 });
 
 app.use(ctx => {
