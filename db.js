@@ -1,10 +1,12 @@
 const { MongoClient } = require('mongodb');
 
-const url = process.env.DB_URI || 'mongodb://127.0.0.1:27017';
-const client = new MongoClient(url);
+const dbUri = process.env.DB_URI || 'mongodb://127.0.0.1:27017';
+const dbName = process.env.DB_NAME || 'waifuseum';
 
-client.connect().then(() => {
-    console.log('mongo: Connected to database');
+const mongo = new MongoClient(dbUri);
+
+mongo.connect().then(() => {
+    console.log('Connected to database');
 });
 
-module.exports = client.db(process.env.DB_NAME || 'waifuseum');
+module.exports = mongo.db(dbName);

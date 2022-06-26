@@ -4,19 +4,21 @@
   "description": "Waifuseum's media provider and image processing service",
   "main": "app.js",
   "scripts": {
-    "start": "micro -l tcp://0.0.0.0:$PORT",
-    "dev": "micro-dev"
+    "start": "node app",
+    "dev": "node -r dotenv/config app"
   },
-  "repository": "https://github.com/BayuDC/waifuseum-media.git",
+  "repository": {
+    "type": "git",
+    "url": "https: //github.com/BayuDC/waifuseum-media.git"
+  },
   "author": "BayuDC <dev.bayudc@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "micro": "^9.3.4",
-    "micro-query": "^0.3.0",
+    "koa": "^2.13.4",
     "mongodb": "^4.7.0",
     "sharp": "^0.30.7"
   },
   "devDependencies": {
-    "micro-dev": "^3.0.0"
+    "dotenv": "^16.0.1"
   }
 }

@@ -1,33 +1,98 @@
-const getQuery = require('./core/get-query');
-const getPicture = require('./core/get-picture');
-const getFile = require('./core/get-file');
-const modFile = require('./core/mod-file');
-const serveFile = require('./core/serve-file');
-const serveError = require('./core/serve-error');
+const fs = require('fs');
+const Koa = require('koa');
+const sharp = require('sharp');
+const { get } = require('https');
+const { ObjectId } = require('mongodb');
+const db = require('./db');
 
-const collection = new Map();
+const app = new Koa();
+const port = process.env.PORT || 3000;
 
-/**
- * @param {import('http').IncomingMessage} req
- * @param {import('http').ServerResponse} res
- */
-module.exports = async (req, res) => {
+app.context.db = db;
+app.context.caches = new Map();
+
+app.use(async (ctx, next) => {
+    const { id } = ctx.query;
+    if (!id) ctx.throw(418);
+
+    const cache = ctx.caches.get(id);
+    if (!cache) return await next();
+
+    ctx.body = fs.createReadStream(cache);
+    ctx.attachment(cache);
+});
+
+app.use(async (ctx, next) => {
+    const { id } = ctx.query;
+    if (!ObjectId.isValid(id)) ctx.throw(400);
+
+    const picture = await ctx.db.collection('pictures').findOne(
+        { _id: new ObjectId(id) },
+        { projection: { url: 1 } }
+        //
+    );
+    if (!picture) ctx.throw(404);
+
+    ctx.state.picture = picture;
+    await next();
+});
+app.use(async (ctx, next) => {
+    const { picture } = ctx.state;
+
     try {
-        const { id } = getQuery(req);
+        await new Promise((resolve, reject) => {
+            get('https://cdn.discordapp.com/attachments' + picture.url, res => {
+                if (res.statusCode != 200) return reject();
 
-        const cache = collection.get(id);
-        if (!cache) {
-            const picture = await getPicture(id);
-            const file = await getFile(picture);
-            await modFile(file);
+                const path = './temp/' + picture._id;
+                const stream = fs.createWriteStream(path);
 
-            collection.set(id, file.name);
-
-            serveFile(res, file.name);
-        } else {
-            serveFile(res, cache);
-        }
-    } catch (err) {
-        serveError(res, err);
+                res.pipe(stream);
+                res.on('end', () => {
+                    picture.path = path;
+                    picture.name = picture._id + '.jpg';
+                    resolve();
+                });
+                res.on('error', () => {
+                    reject();
+                });
+            });
+        });
+    } catch {
+        ctx.throw(410);
     }
-};
+
+    await next();
+});
+
+app.use(async (ctx, next) => {
+    const { picture } = ctx.state;
+
+    try {
+        const path = './data/' + picture.name;
+        await sharp(picture.path)
+            .resize(256, 256, {
+                position: 'top',
+            })
+            .toFile(path);
+
+        fs.unlink(picture.path, () => {});
+        picture.path = path;
+    } catch {
+        ctx.throw(409);
+    }
+
+    await next();
+});
+
+app.use(ctx => {
+    const { picture } = ctx.state;
+
+    ctx.caches.set(picture._id.toString(), picture.path);
+    ctx.body = fs.createReadStream(picture.path);
+    ctx.attachment(picture.path);
+});
+
+app.listen(port, () => {
+    console.log('App running at port', port);
+});
