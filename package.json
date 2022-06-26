@@ -3,13 +3,20 @@
   "version": "0.0.0",
   "description": "Waifuseum's media provider and image processing service",
   "main": "app.js",
-  "scripts": {},
+  "scripts": {
+    "start": "node app",
+    "dev": "node -r dotenv/config app"
+  },
   "repository": {
     "type": "git",
     "url": "https: //github.com/BayuDC/waifuseum-media.git"
   },
   "author": "BayuDC <dev.bayudc@gmail.com>",
   "license": "Apache-2.0",
-  "dependencies": {},
-  "devDependencies": {}
+  "dependencies": {
+    "koa": "^2.13.4"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.1"
+  }
 }
