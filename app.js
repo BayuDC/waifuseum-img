@@ -59,6 +59,7 @@ app.use(async (ctx, next) => {
                         'image/gif': 'gif',
                         'image/webp': 'webp',
                     }[res.headers['content-type']];
+
                     resolve();
                 });
                 res.on('error', () => {
@@ -79,11 +80,13 @@ app.use(async (ctx, next) => {
 
     try {
         const name = `${size}-${picture._id}`;
-        const path = `./data/${name}.${picture.type}`;
+        let path = `./data/${name}.`;
 
         if (size == 'original') {
+            path += picture.type;
             await fs.promises.rename(picture.path, path);
         } else {
+            path += picture.type = 'webp';
             const options = {};
 
             switch (size) {
@@ -104,7 +107,7 @@ app.use(async (ctx, next) => {
                     throw undefined;
             }
 
-            await sharp(picture.path).resize(options).toFile(path);
+            await sharp(picture.path).resize(options).toFormat(picture.type).toFile(path);
         }
 
         fs.unlink(picture.path, () => {});
