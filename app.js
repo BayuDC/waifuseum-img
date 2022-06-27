@@ -2,6 +2,7 @@ const fs = require('fs');
 const Koa = require('koa');
 const sharp = require('sharp');
 const { get } = require('https');
+const { nanoid } = require('nanoid');
 const { ObjectId } = require('mongodb');
 const db = require('./db');
 
@@ -15,11 +16,11 @@ app.use(async (ctx, next) => {
     const { id } = ctx.query;
     if (!id) ctx.throw(418);
 
-    const cache = ctx.caches.get(id);
+    const cache = ctx.caches.get(`thumb-${id}`);
     if (!cache) return await next();
 
     ctx.body = fs.createReadStream(cache);
-    ctx.attachment(cache);
+    ctx.attachment(cache, { type: 'inline' });
 });
 
 app.use(async (ctx, next) => {
@@ -44,13 +45,12 @@ app.use(async (ctx, next) => {
             get('https://cdn.discordapp.com/attachments' + picture.url, res => {
                 if (res.statusCode != 200) return reject();
 
-                const path = './temp/' + picture._id;
+                const path = './temp/' + nanoid();
                 const stream = fs.createWriteStream(path);
 
                 res.pipe(stream);
                 res.on('end', () => {
                     picture.path = path;
-                    picture.name = picture._id + '.jpg';
                     resolve();
                 });
                 res.on('error', () => {
@@ -69,7 +69,8 @@ app.use(async (ctx, next) => {
     const { picture } = ctx.state;
 
     try {
-        const path = './data/' + picture.name;
+        const name = `thumb-${picture._id}`;
+        const path = `./data/${name}.jpg`;
         await sharp(picture.path)
             .resize(256, 256, {
                 position: 'top',
@@ -78,6 +79,7 @@ app.use(async (ctx, next) => {
 
         fs.unlink(picture.path, () => {});
         picture.path = path;
+        picture.name = name;
     } catch {
         ctx.throw(409);
     }
@@ -88,9 +90,9 @@ app.use(async (ctx, next) => {
 app.use(ctx => {
     const { picture } = ctx.state;
 
-    ctx.caches.set(picture._id.toString(), picture.path);
+    ctx.caches.set(picture.name, picture.path);
     ctx.body = fs.createReadStream(picture.path);
-    ctx.attachment(picture.path);
+    ctx.attachment(picture.path, { type: 'inline' });
 });
 
 app.listen(port, () => {
