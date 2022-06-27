@@ -74,11 +74,20 @@ app.use(async (ctx, next) => {
         const name = `${size}-${picture._id}`;
         const path = `./data/${name}.jpg`;
 
-        await sharp(picture.path)
-            .resize(256, 256, {
-                position: 'top',
-            })
-            .toFile(path);
+        switch (size) {
+            case 'thumb':
+                await sharp(picture.path)
+                    .resize(256, 256, {
+                        position: 'top',
+                    })
+                    .toFile(path);
+                break;
+            case 'orig':
+                await fs.promises.rename(picture.path, path);
+                break;
+            default:
+                throw undefined;
+        }
 
         fs.unlink(picture.path, () => {});
         picture.path = path;
