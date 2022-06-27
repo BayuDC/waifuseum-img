@@ -15,8 +15,9 @@ app.context.caches = new Map();
 app.use(async (ctx, next) => {
     const { id, size } = ctx.query;
     if (!id || !size) ctx.throw(418);
-    if (!size?.match(/^(thumb|orig)$/)) ctx.throw(400);
-
+    if (!size?.match(/^(thumbnail|original)$/)) {
+        ctx.throw(400);
+    }
     const cache = ctx.caches.get(`${size}-${id}`);
     if (!cache) return await next();
 
@@ -75,14 +76,14 @@ app.use(async (ctx, next) => {
         const path = `./data/${name}.jpg`;
 
         switch (size) {
-            case 'thumb':
+            case 'thumbnail':
                 await sharp(picture.path)
                     .resize(256, 256, {
                         position: 'top',
                     })
                     .toFile(path);
                 break;
-            case 'orig':
+            case 'original':
                 await fs.promises.rename(picture.path, path);
                 break;
             default:
