@@ -18,7 +18,7 @@ app.use(async (ctx, next) => {
     if (!size?.match(/^(thumbnail|minimal|standard|original)$/)) {
         ctx.throw(400);
     }
-    const cache = ctx.caches.get(`${size}-${id}`);
+    const cache = ctx.caches.get(`${id}-${size}`);
     if (!cache) return await next();
 
     ctx.body = fs.createReadStream(cache);
@@ -79,7 +79,7 @@ app.use(async (ctx, next) => {
     const { picture } = ctx.state;
 
     try {
-        const name = `${size}-${picture._id}`;
+        const name = `${picture._id}-${size}`;
         let path = `./data/${name}.`;
 
         if (size == 'original') {
