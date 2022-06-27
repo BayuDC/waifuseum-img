@@ -53,6 +53,12 @@ app.use(async (ctx, next) => {
                 res.pipe(stream);
                 res.on('end', () => {
                     picture.path = path;
+                    picture.type = {
+                        'image/png': 'png',
+                        'image/jpeg': 'jpg',
+                        'image/gif': 'gif',
+                        'image/webp': 'webp',
+                    }[res.headers['content-type']];
                     resolve();
                 });
                 res.on('error', () => {
@@ -73,7 +79,7 @@ app.use(async (ctx, next) => {
 
     try {
         const name = `${size}-${picture._id}`;
-        const path = `./data/${name}.jpg`;
+        const path = `./data/${name}.${picture.type}`;
 
         switch (size) {
             case 'thumbnail':
