@@ -81,35 +81,30 @@ app.use(async (ctx, next) => {
         const name = `${size}-${picture._id}`;
         const path = `./data/${name}.${picture.type}`;
 
-        switch (size) {
-            case 'thumbnail':
-                await sharp(picture.path)
-                    .resize(256, 256, {
-                        position: 'top',
-                    })
-                    .toFile(path);
-                break;
-            case 'minimal':
-                await sharp(picture.path)
-                    .resize({
-                        width: picture.width >= picture.height ? 600 : undefined,
-                        height: picture.height >= picture.width ? 600 : undefined,
-                    })
-                    .toFile(path);
-                break;
-            case 'standard':
-                await sharp(picture.path)
-                    .resize({
-                        width: picture.width >= picture.height ? 1200 : undefined,
-                        height: picture.height >= picture.width ? 1200 : undefined,
-                    })
-                    .toFile(path);
-                break;
-            case 'original':
-                await fs.promises.rename(picture.path, path);
-                break;
-            default:
-                throw undefined;
+        if (size == 'original') {
+            await fs.promises.rename(picture.path, path);
+        } else {
+            const options = {};
+
+            switch (size) {
+                case 'thumbnail':
+                    options.width = options.height = 300;
+                    options.position = 'top';
+                    break;
+                case 'minimal':
+                    options.width = picture.width >= picture.height ? 600 : undefined;
+                    options.height = picture.height >= picture.width ? 600 : undefined;
+                    break;
+                case 'standard':
+                    options.width = picture.width >= picture.height ? 1200 : undefined;
+                    options.height = picture.height >= picture.width ? 1200 : undefined;
+                    break;
+
+                default:
+                    throw undefined;
+            }
+
+            await sharp(picture.path).resize(options).toFile(path);
         }
 
         fs.unlink(picture.path, () => {});
