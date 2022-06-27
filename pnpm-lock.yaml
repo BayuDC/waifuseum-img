@@ -4,11 +4,13 @@ specifiers:
   dotenv: ^16.0.1
   koa: ^2.13.4
   mongodb: ^4.7.0
+  nanoid: '3'
   sharp: ^0.30.7
 
 dependencies:
   koa: 2.13.4
   mongodb: 4.7.0
+  nanoid: 3.3.4
   sharp: 0.30.7
 
 devDependencies:
@@ -398,6 +400,12 @@ packages:
 
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
+    dev: false
+
+  /nanoid/3.3.4:
+    resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
     dev: false
 
   /napi-build-utils/1.0.2:
