@@ -14,13 +14,15 @@ app.context.caches = new Map();
 
 app.use(async (ctx, next) => {
     const { id, size } = ctx.query;
-    if (!id || !size) ctx.throw(418);
-    if (!size?.match(/^(thumbnail|minimal|standard|original)$/)) {
-        ctx.throw(400);
-    }
-    const cache = ctx.caches.get(`${id}-${size}`);
-    if (!cache) return await next();
 
+    const cache = ctx.caches.get(`${id}-${size}`);
+    if (!cache) {
+        if (!id || !size) ctx.throw(418);
+        if (!size.match(/^(thumbnail|minimal|standard|original)$/)) {
+            ctx.throw(400);
+        }
+        return await next();
+    }
     ctx.body = fs.createReadStream(cache);
     ctx.attachment(cache, { type: 'inline' });
 });
