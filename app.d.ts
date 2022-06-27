@@ -11,6 +11,8 @@ declare module 'koa' {
             url: string;
             path: string;
             name: string;
+            width: number;
+            height: number;
         };
     }
 }

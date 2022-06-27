@@ -15,7 +15,7 @@ app.context.caches = new Map();
 app.use(async (ctx, next) => {
     const { id, size } = ctx.query;
     if (!id || !size) ctx.throw(418);
-    if (!size?.match(/^(thumbnail|original)$/)) {
+    if (!size?.match(/^(thumbnail|minimal|standard|original)$/)) {
         ctx.throw(400);
     }
     const cache = ctx.caches.get(`${size}-${id}`);
@@ -31,7 +31,7 @@ app.use(async (ctx, next) => {
 
     const picture = await ctx.db.collection('pictures').findOne(
         { _id: new ObjectId(id) },
-        { projection: { url: 1 } }
+        { projection: { url: 1, width: 1, height: 1 } }
         //
     );
     if (!picture) ctx.throw(404);
@@ -80,6 +80,22 @@ app.use(async (ctx, next) => {
                 await sharp(picture.path)
                     .resize(256, 256, {
                         position: 'top',
+                    })
+                    .toFile(path);
+                break;
+            case 'minimal':
+                await sharp(picture.path)
+                    .resize({
+                        width: picture.width >= picture.height ? 600 : undefined,
+                        height: picture.height >= picture.width ? 600 : undefined,
+                    })
+                    .toFile(path);
+                break;
+            case 'standard':
+                await sharp(picture.path)
+                    .resize({
+                        width: picture.width >= picture.height ? 1200 : undefined,
+                        height: picture.height >= picture.width ? 1200 : undefined,
                     })
                     .toFile(path);
                 break;
