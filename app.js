@@ -13,10 +13,11 @@ app.context.db = db;
 app.context.caches = new Map();
 
 app.use(async (ctx, next) => {
-    const { id } = ctx.query;
-    if (!id) ctx.throw(418);
+    const { id, size } = ctx.query;
+    if (!id || !size) ctx.throw(418);
+    if (!size?.match(/^(thumb|orig)$/)) ctx.throw(400);
 
-    const cache = ctx.caches.get(`thumb-${id}`);
+    const cache = ctx.caches.get(`${size}-${id}`);
     if (!cache) return await next();
 
     ctx.body = fs.createReadStream(cache);
@@ -66,11 +67,13 @@ app.use(async (ctx, next) => {
 });
 
 app.use(async (ctx, next) => {
+    const { size } = ctx.query;
     const { picture } = ctx.state;
 
     try {
-        const name = `thumb-${picture._id}`;
+        const name = `${size}-${picture._id}`;
         const path = `./data/${name}.jpg`;
+
         await sharp(picture.path)
             .resize(256, 256, {
                 position: 'top',
