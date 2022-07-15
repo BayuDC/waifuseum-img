@@ -46,7 +46,7 @@ app.use(async (ctx, next) => {
 
     try {
         await new Promise((resolve, reject) => {
-            get('https://cdn.discordapp.com/attachments' + picture.url, res => {
+            get(picture.url, res => {
                 if (res.statusCode != 200) return reject();
 
                 const path = './temp/' + nanoid();
