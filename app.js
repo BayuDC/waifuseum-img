@@ -93,7 +93,7 @@ app.use(async (ctx, next) => {
 
             switch (size) {
                 case 'thumbnail':
-                    options.width = options.height = 300;
+                    options.width = options.height = 600;
                     options.position = 'top';
                     break;
                 case 'minimal':
