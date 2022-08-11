@@ -4,12 +4,12 @@ const sharp = require('sharp');
 const { get } = require('https');
 const { nanoid } = require('nanoid');
 const { ObjectId } = require('mongodb');
-const db = require('./db');
+const { mongo, redis } = require('./db');
 
 const app = new Koa();
 const port = process.env.PORT || 3000;
 
-app.context.db = db;
+app.context.mongo = mongo;
 app.context.caches = new Map();
 
 app.use(async (ctx, next) => {
@@ -31,7 +31,7 @@ app.use(async (ctx, next) => {
     const { id } = ctx.query;
     if (!ObjectId.isValid(id)) ctx.throw(400);
 
-    const picture = await ctx.db.collection('pictures').findOne(
+    const picture = await ctx.mongo.collection('pictures').findOne(
         { _id: new ObjectId(id) },
         { projection: { url: 1, width: 1, height: 1 } }
         //
