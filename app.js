@@ -10,12 +10,12 @@ const app = new Koa();
 const port = process.env.PORT || 3000;
 
 app.context.mongo = mongo;
-app.context.caches = new Map();
+app.context.redis = redis;
 
 app.use(async (ctx, next) => {
     const { id, size } = ctx.query;
 
-    const cache = ctx.caches.get(`${id}-${size}`);
+    const cache = await ctx.redis.get(`${id}:${size}`);
     if (!cache) {
         if (!id || !size) ctx.throw(418);
         if (!size.match(/^(thumbnail|minimal|standard|original)$/)) {
@@ -81,7 +81,7 @@ app.use(async (ctx, next) => {
     const { picture } = ctx.state;
 
     try {
-        const name = `${picture._id}-${size}`;
+        const name = `${picture._id}:${size}`;
         let path = `./data/${name}.`;
 
         if (size == 'original') {
@@ -125,7 +125,7 @@ app.use(async (ctx, next) => {
 app.use(ctx => {
     const { picture } = ctx.state;
 
-    ctx.caches.set(picture.name, picture.path);
+    ctx.redis.set(picture.name, picture.path);
     ctx.body = fs.createReadStream(picture.path);
     ctx.attachment(picture.path, { type: 'inline' });
 });
