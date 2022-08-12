@@ -125,7 +125,7 @@ app.use(ctx => {
     const { picture } = ctx.state;
 
     ctx.redis.set(picture.name, picture.path);
-    ctx.redis.set(`${picture.name}:alive`, picture.name, 'EX', 600);
+    ctx.redis.set(picture.name + '*', 1, { EX: 600 });
     ctx.body = fs.createReadStream(picture.path);
     ctx.attachment(picture.path, { type: 'inline' });
 });

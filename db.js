@@ -23,9 +23,12 @@ module.exports = {
 };
 
 setInterval(async () => {
-    (await redis.keys('*:alive')).forEach(async key => {
-        const cache = await redis.get(key);
-        await fs.unlink(cache);
-        await redis.del(key);
+    (await redis.keys('*[^*]')).forEach(async key => {
+        const life = await redis.get(key + '*');
+        if (!life) {
+            const cache = await redis.get(key);
+            await fs.unlink(cache);
+            await redis.del(key);
+        }
     });
 }, 600 * 1000);
