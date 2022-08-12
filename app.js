@@ -124,7 +124,8 @@ app.use(async (ctx, next) => {
 app.use(ctx => {
     const { picture } = ctx.state;
 
-    ctx.redis.set(picture.name, picture.path, 'EX', 1800);
+    ctx.redis.set(picture.name, picture.path);
+    ctx.redis.set(`${picture.name}:alive`, picture.name, 'EX', 600);
     ctx.body = fs.createReadStream(picture.path);
     ctx.attachment(picture.path, { type: 'inline' });
 });

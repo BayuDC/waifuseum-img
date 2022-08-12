@@ -1,3 +1,4 @@
+const fs = require('fs/promises');
 const { MongoClient } = require('mongodb');
 const { createClient } = require('redis');
 
@@ -20,3 +21,11 @@ module.exports = {
     mongo: mongo.db(dbName),
     redis,
 };
+
+setInterval(async () => {
+    (await redis.keys('*:alive')).forEach(async key => {
+        const cache = await redis.get(key);
+        await fs.unlink(cache);
+        await redis.del(key);
+    });
+}, 600);
