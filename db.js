@@ -28,4 +28,4 @@ setInterval(async () => {
         await fs.unlink(cache);
         await redis.del(key);
     });
-}, 600);
+}, 600 * 1000);
