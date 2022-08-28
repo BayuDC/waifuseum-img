@@ -1,10 +1,11 @@
 {
-  "name": "waifuseum-media",
+  "name": "waifuseum-img",
   "version": "0.0.0",
-  "description": "Waifuseum's media provider and image processing service",
+  "description": "Waifuseum's image processing service",
   "main": "app.js",
   "scripts": {
     "start": "node app",
+    "prod": "pm2-runtime app.js --max-memory-restart 256M",
     "dev": "node -r dotenv/config app"
   },
   "engines": {
@@ -20,6 +21,7 @@
     "koa": "^2.13.4",
     "mongodb": "^4.7.0",
     "nanoid": "3",
+    "pm2": "^5.2.0",
     "sharp": "^0.30.7"
   },
   "devDependencies": {
