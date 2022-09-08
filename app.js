@@ -9,6 +9,9 @@ const db = require('./db');
 const app = new Koa();
 const port = process.env.PORT || 3000;
 
+sharp.cache(false);
+sharp.concurrency(1);
+
 app.context.db = db;
 app.context.caches = new Map();
 
